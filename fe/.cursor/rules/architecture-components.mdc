@@ -1,0 +1,37 @@
+---
+description: Component layers, folder structure, type placement, and import alias rules
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Architecture & Component Rules
+
+## Component Layers (A2)
+- `src/components/ui/` — **presentational only**. No business logic, no data fetching, no state beyond local UI state. shadcn lives here.
+- `src/components/feature/` — combines **logic + UI**.
+- Never put API calls or TanStack Query hooks inside `ui/` components.
+
+## Component Folder Structure (A3)
+Each component is its own folder. Create files **only when that concern exists** — no empty placeholders.
+
+```
+<ComponentName>/
+├── index.tsx     # JSX + wiring. Always present. One React component only.
+├── model.tsx     # Types for this component.
+├── helper.tsx    # Pure logic.
+├── constant.tsx  # Constants.
+├── action.tsx    # API writes.
+└── query.tsx     # TanStack Query reads.
+```
+
+## One React component per folder (A8)
+Never define a second React component in the same folder. Nest page-only children under the page folder.
+
+## Types in `model.tsx` — Never a central `src/types/` (A4)
+Every type lives in the owning folder's `model.tsx`. Never create `src/types/` or standalone `*.types.ts`.
+
+## File Extensions — Always `.tsx` (A5)
+All component-folder files use `.tsx`, even non-JSX ones (`model`, `helper`, `constant`, `action`, `query`).
+
+## Import Alias — Always `@/` (A6)
+Use `@/` for cross-folder imports. Never `../../` more than one level up.

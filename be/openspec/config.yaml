@@ -1,0 +1,33 @@
+schema: spec-driven
+
+# Shown to AI when creating artifacts.
+context: |
+  This is the password-manager API (`be/`). Sibling PWA is `../fe` (Vite). Same product — do not invent a second API or auth contract.
+
+  Product:
+  - Personal password manager: secure storage, sharing, custom data templates.
+  - Zero-knowledge: the server stores ciphertext, nonces, wrapped keys, and KDF params only. Never decrypt vault payloads.
+  - Session: httpOnly access + refresh cookies (secure, sameSite). Logout expires the cookie. Never return tokens in JSON. Never accept Authorization: Bearer as the session mechanism.
+  - User DTOs must not include passwordHash, kdfSalt, encryptedPrivateKey, or vault keys.
+
+  Stack (locked):
+  - NestJS 12 ESM (`"type": "module"`). Local imports use .js specifiers.
+  - Shared HTTP setup in src/configure-app.ts (prefix /api, CORS + credentials, ValidationPipe). Tests must call configureApp(app).
+  - Prisma 7.9.x + PostgreSQL 16 (docker-compose at repo root). Client generated to src/generated/prisma (gitignored).
+  - Do not import PrismaModule into AppModule until the first prisma migrate dev has run.
+  - Config via ConfigModule + Zod. Controllers must not scatter process.env.
+  - Lint: oxlint. Format: Prettier.
+
+  Working agreement:
+  - Do not implement product features unless the user names that piece.
+  - Confirm before editing files (G3). Conventional Commits. Branches: feature/* or bugfix/*.
+  - API/spec contracts live in this app's openspec/. Do not copy PWA screens into the backend.
+
+# Per-artifact rules
+rules:
+  proposal:
+    - Keep proposals under 500 words
+    - Always include a Non-goals section
+    - Do not propose storing or logging plaintext vault secrets
+  tasks:
+    - Break tasks into small, reviewable chunks

@@ -1,0 +1,31 @@
+---
+description: Conventional commits, no console, secrets, Nest hooks
+alwaysApply: true
+---
+
+# Project Conventions
+
+## Confirm before changing files (G3)
+List every create/modify/delete and **wait for confirmation**. See `.cursor/rules/confirm-before-edit.mdc`.
+
+## Conventional Commits (S9)
+`hook-commit-guard` blocks non-conforming messages (`feat:`, `fix:`, `chore:`, `refactor:`, `test:`, `docs:`, `style:`, `perf:`, `build:`, `ci:`, `revert:`).
+
+## No `console.log` in Production Code (S10)
+Do not leave `console.log` / `warn` / `error` in production-bound code. Use a Nest logger.
+
+## No Hardcoded Secrets (H6)
+Never hardcode secrets. Use `ConfigService` and `.env.example` (no real values). `hook-secret-scan` blocks secret patterns in writes.
+
+## Package Install Approval (H7)
+`npm install` (no args) is allowed. `npm install <package>` requires user approval.
+
+## Automated Hooks (G2)
+Do not bypass hooks.
+
+| Event | Hook |
+|----|---|
+| `preToolUse` | `hook-protect-env`, `hook-secret-scan` |
+| `afterFileEdit` | `hook-format-and-lint` (oxlint + prettier) |
+| `beforeShellExecution` | `hook-commit-guard`, `hook-branch-guard`, `hook-dep-install` |
+| `stop` | `hook-readme-sync` |

@@ -1,0 +1,18 @@
+---
+description: ConfigModule / ConfigService — never scatter process.env
+globs: **/*.ts
+alwaysApply: false
+---
+
+# Environment Configuration Rules
+
+## ConfigService (B1)
+Read env through `@nestjs/config` (`ConfigService`). Controllers and services must not read `process.env` directly except in `prisma.config.ts` / Prisma adapter bootstrap.
+
+When adding a variable:
+1. Add it to the Zod schema in `app.module.ts`.
+2. Add it to `.env.example` with a dummy value.
+3. Never commit `.env`.
+
+## Local database (B2)
+`DATABASE_URL` comes from docker-compose Postgres. Copy `.env.example` → `.env` locally.

@@ -1,0 +1,35 @@
+---
+description: LSP-first code navigation — LSP is mandatory, not optional
+alwaysApply: true
+---
+
+# Code Navigation Rules
+
+## LSP Is Mandatory (F1)
+Language Server Protocol tools (go-to-definition, find-references, rename-symbol) are **required**, not optional. If LSP is not available in the current session, make it available before proceeding.
+
+### How to make LSP available
+If LSP tools are absent:
+1. Ensure the TypeScript language server is running (`npm run start:dev` type-checks via Nest / the editor LSP).
+2. For standalone LSP in agent sessions, install and use `typescript-language-server` or rely on Cursor's built-in TypeScript LSP.
+3. Never skip LSP and fall back to grep for symbol resolution — set it up first.
+
+### Navigation priority
+| Task | Use |
+|------|-----|
+| Find where a function/type is defined | LSP go-to-definition |
+| Find all usages of a symbol | LSP find-references |
+| Rename a symbol across the codebase | LSP rename-symbol |
+| Search for a literal string / config value | Grep / Glob |
+| Find files by path pattern | Glob |
+| Cross-file naming-convention audit | Grep |
+
+```
+// ✅ GOOD — resolve the actual symbol graph
+// Use go-to-definition on `getToken` to find its real source
+
+// ❌ BAD — text search for a symbol
+// grep -r "getToken" src/
+```
+
+LSP resolves TypeScript's actual symbol graph including imports, re-exports, generics, and the `@` alias — results are exact. Text search is approximate and misses re-exports and aliased imports.

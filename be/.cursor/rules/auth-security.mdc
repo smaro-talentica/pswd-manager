@@ -1,0 +1,26 @@
+---
+description: Auth cookies, never return vault secrets, CORS credentials
+alwaysApply: true
+---
+
+# Auth & Security Rules
+
+## httpOnly Cookies (C1)
+The API sets access and refresh tokens via `Set-Cookie`:
+- `httpOnly: true`
+- `secure: true`
+- `sameSite: 'strict'` (or `'lax'` for cross-site redirect flows)
+
+Never put tokens in JSON response bodies. Never accept `Authorization: Bearer` as the session mechanism.
+
+## CORS + credentials (C2)
+`configure-app.ts` enables CORS with a specific `FRONTEND_ORIGIN` and `credentials: true`. Do not use `origin: '*'`.
+
+## Logout expires the cookie (C3)
+`POST /api/auth/logout` must `Set-Cookie` with a past expiry. Clearing client state is not enough.
+
+## Short-lived access + refresh (C4)
+Two cookies: short-lived access, longer refresh used only to rotate. Revoke on the server.
+
+## Never leak secrets (C5)
+User DTOs must **not** include `passwordHash`, `kdfSalt`, `encryptedPrivateKey`, vault DEKs, or item ciphertext in logs. The server stores ciphertext; it must not decrypt vault payloads.

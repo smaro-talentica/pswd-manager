@@ -1,0 +1,19 @@
+﻿{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      { "command": "node .cursor/hooks/hook-protect-env.mjs" },
+      { "command": "node .cursor/hooks/hook-secret-scan.mjs" }
+    ],
+    "afterFileEdit": [
+      { "command": "node .cursor/hooks/hook-format-and-lint.mjs" },
+      { "command": "node .cursor/hooks/hook-style-guardrail.mjs" }
+    ],
+    "beforeShellExecution": [
+      { "command": "node .cursor/hooks/hook-commit-guard.mjs" },
+      { "command": "node .cursor/hooks/hook-branch-guard.mjs" },
+      { "command": "node .cursor/hooks/hook-dep-install.mjs" }
+    ],
+    "stop": [{ "command": "node .cursor/hooks/hook-readme-sync.mjs" }]
+  }
+}

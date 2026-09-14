@@ -1,0 +1,25 @@
+---
+description: List every create/edit/delete first; wait for confirmation before touching files
+alwaysApply: true
+---
+
+# Confirm before changing files (G3)
+
+Before creating, renaming, moving, or editing **any** file (modules, specs, rules, config, tests, README), **stop**. Do not write, delete, or run mutating git commands yet.
+
+Read-only exploration (read, search, git status) is allowed so the list is accurate.
+
+## What to post
+
+A numbered list of **every** intended change:
+
+- **Create** — full path and what it is (module, DTO, test, spec, …)
+- **Modify** — full path and what will change
+- **Delete** — full path and why
+- **Git** — branch to create/switch to, if any
+
+Do not start implementing in the same turn. Wait for an explicit go-ahead such as: yes, confirmed, go ahead, execute, do it, proceed, ok.
+
+After confirmation, execute **only** what was listed. If the plan changes, post an updated list and wait again.
+
+This gate applies even for small edits. It does not apply to answering questions with no file changes.

@@ -1,0 +1,20 @@
+---
+description: TypeScript strictness, linting, and formatting
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Code Quality Rules
+
+## No `any` (E1)
+`any` is forbidden. Use `unknown` and narrow. Never `// @ts-ignore`. `// @ts-expect-error` only with a justification.
+
+## Prettier + ESLint (E2)
+- `npm run format` / `npm run lint` before a PR.
+- 2-space indent. Do not add `eslint-disable` without a comment explaining why.
+
+## TypeScript Must Compile Clean (E3)
+`npm run build` (`tsc -b`) must pass. Do not cast away errors with `as unknown as X`.
+
+## Tests (E4)
+This app has no test runner yet. When tests are added, colocate them (`helper.test.tsx`) and cover new pure logic. Do not add a runner unless the user asks.

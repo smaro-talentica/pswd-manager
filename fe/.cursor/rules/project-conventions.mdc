@@ -1,0 +1,59 @@
+---
+description: PWA cache rules, conventional commits, no console in prod, and automated hooks
+alwaysApply: true
+---
+
+# Project Conventions
+
+## One React component per folder (A8)
+Never put two React components in the same folder. A page-only child lives in `src/pages/<Page>/<Child>/index.tsx`, not inlined in the page `index.tsx` and not in `src/components/` until a second caller exists.
+
+## Confirm before changing files (G3)
+Before creating or editing any file, list every create/modify/delete (and any git branch) and **wait for confirmation**. See `.cursor/rules/confirm-before-edit.mdc`.
+
+## PWA — Never Cache API (S8)
+Workbox must use `NetworkOnly` for `/api/*` (including `/api/auth/*`). Auth and vault traffic always hit the network.
+
+## Conventional Commits (S9)
+`hook-commit-guard` blocks non-conforming messages.
+
+| Prefix | When |
+|-----|---|
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `chore:` | Tooling, deps, config |
+| `refactor:` | Restructure without behavior change |
+| `test:` | Tests |
+| `docs:` | Documentation |
+| `style:` | Formatting only |
+| `perf:` | Performance |
+| `build:` | Build / deps |
+| `ci:` | CI |
+| `revert:` | Revert |
+
+```
+# ✅ GOOD
+feat: add cookie-based auth session
+
+# ❌ BAD
+updated stuff
+```
+
+## No `console.log` in Production Code (S10)
+`console.log` / `warn` / `error` are not allowed in production-bound code. Development-only: `if (isDevelopment) console.debug(...)`.
+
+## No Hardcoded Secrets (H6)
+Never hardcode API keys, tokens, or passwords. Use `src/utils/env.ts` and `VITE_*` variables.
+
+## Package Install Approval (H7)
+`npm install` (no args) is allowed. `npm install <package>` requires user approval (`hook-dep-install`).
+
+## Automated Hooks (G2)
+Verdicts are non-negotiable. Do not disable hooks.
+
+| Event | Hook |
+|----|---|
+| `preToolUse` | `hook-protect-env`, `hook-secret-scan` |
+| `afterFileEdit` | `hook-format-and-lint`, `hook-style-guardrail` |
+| `beforeShellExecution` | `hook-commit-guard`, `hook-branch-guard`, `hook-dep-install` |
+| `stop` | `hook-readme-sync` |

@@ -1,0 +1,38 @@
+---
+description: context7 MCP is mandatory for all external library and framework documentation lookups
+alwaysApply: true
+---
+
+# External Documentation Rules
+
+## context7 MCP Is Mandatory for Docs (D1)
+
+Never answer questions about library APIs, framework behaviour, or SDK configuration from training-data memory alone — always fetch live docs via the **context7 MCP** first.
+
+### When to use context7
+
+| Situation | Action |
+|-----------|--------|
+| Library API usage (React, MUI, Vite, React Router, …) | `context7` → `resolve-library-id` then `query-docs` |
+| Framework config options (Vite, Workbox, Vitest, …) | `context7` → `resolve-library-id` then `query-docs` |
+| SDK / package migration or upgrade guidance | `context7` → `resolve-library-id` then `query-docs` |
+| CLI tool flags and commands | `context7` → `resolve-library-id` then `query-docs` |
+| General programming concepts (no specific library) | Answer from knowledge — no context7 needed |
+
+### Two-step pattern
+
+```
+// ✅ GOOD — always resolve the library ID first, then query
+Step 1: CallMcpTool context7 / resolve-library-id  → { libraryId: "/mui/material-ui" }
+Step 2: CallMcpTool context7 / query-docs          → { libraryId: "/mui/material-ui", query: "Button props" }
+
+// ❌ BAD — answering from memory without fetching docs
+"The MUI Button accepts a `variant` prop with values 'text' | 'contained' | 'outlined'"
+(training data may be stale — always verify with context7)
+```
+
+### Rules
+
+- **Never** skip context7 for library-specific questions on the grounds that "you know the answer" — APIs change between versions.
+- If `resolve-library-id` returns no match, fall back to a targeted web search and state that context7 had no result.
+- Do **not** use context7 for pure logic questions, refactoring, or code review — only for external API/doc references.

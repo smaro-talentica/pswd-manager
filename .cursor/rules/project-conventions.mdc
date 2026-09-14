@@ -1,0 +1,26 @@
+---
+description: Conventional commits, secrets, hooks for the password-manager repo
+alwaysApply: true
+---
+
+# Project Conventions
+
+This repo is `fe/` (Vite PWA) + `be/` (NestJS). Client-specific architecture lives in each app's `.cursor/rules`. Shared process rules always apply here.
+
+## Confirm before changing files (G3)
+List every create/modify/delete and wait for confirmation.
+
+## Conventional Commits (S9)
+`feat:` / `fix:` / `chore:` / … — `hook-commit-guard` enforces this.
+
+## No Hardcoded Secrets (H6)
+`hook-protect-env` blocks `.env` (allows `.env.example`). `hook-secret-scan` blocks secret literals in source.
+
+## Package Install Approval (H7)
+`npm install <package>` requires approval.
+
+## PWA never caches `/api/*`
+Workbox `NetworkOnly` for all API routes, especially `/api/auth/*`.
+
+## Automated Hooks (G2)
+Do not bypass. Format/lint runs in `fe/` (eslint) or `be/` (oxlint) based on the edited file path.

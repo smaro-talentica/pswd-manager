@@ -1,0 +1,35 @@
+schema: spec-driven
+
+# Shown to AI when creating artifacts.
+context: |
+  This is the password-manager PWA client (`fe/`). Sibling API is `../be` (NestJS). Same backend — do not invent a second API or auth contract.
+
+  Product:
+  - Personal password manager: secure storage, sharing, custom data templates.
+  - Zero-knowledge: encrypt/decrypt in the browser. The API stores ciphertext only.
+  - Session: httpOnly cookies. Never localStorage/sessionStorage tokens. fetch with credentials: 'include'. Never Authorization: Bearer.
+
+  UI stack (locked):
+  - Vite 8 + React 19 + TypeScript + Tailwind CSS v4 + shadcn/ui (`src/components/ui/`).
+  - Icons: lucide-react (shadcn). No MUI widgets or other icon packs.
+  - Routing: one createBrowserRouter registry in src/AppRoute/index.tsx.
+  - Data: TanStack Query. Env only via src/utils/env.ts (VITE_*).
+  - PWA: vite-plugin-pwa. Never cache /api/* (NetworkOnly), especially /api/auth/*.
+
+  Target surface:
+  - Installable PWA, mobile-friendly. Content column w-full max-w-sm mx-auto.
+  - Dev: HTTPS via basic-ssl; /api proxied to http://localhost:3000.
+
+  Working agreement:
+  - Do not implement product features unless the user names that piece.
+  - Confirm before editing files (G3). Conventional Commits. Branches: feature/* or bugfix/*.
+  - Screen specs stay in this app's openspec/. Do not copy desktop or phone layouts from other products.
+
+# Per-artifact rules
+rules:
+  proposal:
+    - Keep proposals under 500 words
+    - Always include a Non-goals section
+    - Do not propose plaintext vault storage
+  tasks:
+    - Break tasks into small, reviewable chunks

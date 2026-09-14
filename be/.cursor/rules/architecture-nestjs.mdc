@@ -1,0 +1,28 @@
+---
+description: NestJS module layout, ESM imports, Prisma, ciphertext-only persistence
+globs: **/*.ts
+alwaysApply: false
+---
+
+# NestJS Architecture
+
+## ESM specifiers
+This app is `"type": "module"`. Local imports **must** use `.js` specifiers (`./health.module.js`).
+
+## Shared HTTP setup
+CORS, global `/api` prefix, and `ValidationPipe` live in `src/configure-app.ts`. `main.ts` and e2e tests both call `configureApp(app)`. Do not duplicate bootstrap in tests.
+
+## One module per concern
+Feature modules: `auth`, `vaults`, `items`, `folders`, `templates`, `shares`. DTOs use `class-validator`. Controllers stay thin.
+
+## Prisma
+- Schema: `prisma/schema.prisma`. Client output: `src/generated/prisma` (gitignored).
+- `PrismaService` / `PrismaModule` in `src/prisma/`.
+- Do **not** import `PrismaModule` into `AppModule` until the first `prisma migrate dev` has run.
+- Pin Prisma CLI to 7.9.x.
+
+## No plaintext vault data
+Store `Bytes` ciphertext, nonces, wrapped keys, and KDF params only. Do not decrypt item payloads on the server.
+
+## Config
+Read env through `ConfigModule` / `ConfigService`. Do not scatter `process.env` in controllers.

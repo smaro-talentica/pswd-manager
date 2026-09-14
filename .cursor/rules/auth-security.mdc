@@ -1,0 +1,18 @@
+---
+description: Auth token handling — httpOnly cookies, no Bearer in the client, no vault plaintext on the server
+alwaysApply: true
+---
+
+# Auth & Security Rules
+
+## Token Storage — httpOnly Cookie, NOT localStorage (C1)
+Tokens **must never be stored in `localStorage` or `sessionStorage`**. The server sets httpOnly, secure cookies. The PWA uses `credentials: 'include'` and never sends `Authorization: Bearer`.
+
+## Logout Is a Server Round-Trip (C3)
+`POST /api/auth/logout` expires the cookie. Clearing React state is not logout.
+
+## Short-Lived Access + Refresh (C4)
+Two cookies. Revocation is server-side.
+
+## Vault plaintext never hits the API (C5)
+Encrypt in the browser. The API stores `Bytes` ciphertext only. Do not return `passwordHash`, wrapped keys, or ciphertext in logs.

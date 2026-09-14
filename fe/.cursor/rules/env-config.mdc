@@ -1,0 +1,25 @@
+---
+description: Environment variable access via src/utils/env.ts
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Environment Configuration Rules
+
+## Centralized Env Access (B1)
+All environment variable access **must go through `src/utils/env.ts`**. Never read `import.meta.env` in components.
+
+When adding a variable:
+1. Add it to `src/utils/env.ts`.
+2. Declare it in `src/vite-env.d.ts` (`ImportMetaEnv`).
+3. Add it to `.env.example` (no real secret).
+
+## Three Environments (B2)
+
+| Mode | File | Script |
+|------|------|--------|
+| `development` | `.env.development` | `npm run dev` |
+| `staging` | `.env.staging` | `npm run dev:stage` |
+| `production` | `.env.production` | `npm run build` |
+
+Client-exposed vars **must** be prefixed `VITE_`. Secrets go in `.env.local` (git-ignored).

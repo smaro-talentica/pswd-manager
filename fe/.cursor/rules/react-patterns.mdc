@@ -1,0 +1,28 @@
+---
+description: React patterns — mobile-first, named exports, TanStack Query, AppRoute registry
+globs: **/*.tsx
+alwaysApply: false
+---
+
+# React Patterns
+
+## Mobile-First Breakpoints Only (S1)
+Use `sm:`, `md:`, `lg:`, `xl:`. **Never use `max-*` variants**.
+
+## Named Exports (S2)
+Components, hooks, and utilities use **named exports**. `src/AppRoute/index.tsx` may keep a default export because `main.tsx` imports it that way until it is refactored.
+
+## TanStack Query for Server State (S3)
+No `useEffect` + `fetch` for reads. Put `useQuery` hooks in `query.tsx` with typed query keys. Mutations in `action.tsx`.
+
+## Single Route Registry (S4)
+All routes are registered in `src/AppRoute/index.tsx` with **`createBrowserRouter`**. No scattered `<Route>` trees. Wrap each page in `RouteErrorBoundary` once that helper exists.
+
+## Absolute Imports (S5)
+`@/` for cross-folder imports. Relative `./` only inside the same component folder.
+
+## Error Boundaries per Route (S6)
+Errors in one route must not crash the app. Add `RouteErrorBoundary` when routing is expanded beyond the scaffold.
+
+## `React.lazy` + `Suspense` per Route (S7)
+New page-level components are code-split with `React.lazy` in the route registry.

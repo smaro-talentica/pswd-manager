@@ -1,0 +1,42 @@
+---
+description: Branch creation workflow for features and bugfixes
+alwaysApply: true
+---
+
+# Git Branch Workflow
+
+## Trigger phrases
+When the user says anything like:
+- "start a new feature", "I want to work on a feature", "let's build X"
+- "start a bugfix", "fix bug", "there's a bug in X"
+- "new ticket", "working on ticket"
+
+**Immediately create a branch before writing any code.**
+
+## Branch naming rules
+
+| Scenario | Format | Example |
+|----|----|---|
+| Feature with ticket number | `feature/<ticket_number>` | `feature/SAFE-123` |
+| Bugfix with ticket number | `bugfix/<ticket_number>` | `bugfix/SAFE-456` |
+| Feature without ticket | `feature/<short-desc>` | `feature/cookie-auth` |
+| Bugfix without ticket | `bugfix/<short-desc>` | `bugfix/session-restore` |
+
+Rules for `<short-desc>`:
+- lowercase, hyphen-separated, no spaces or underscores
+- max 4-5 words — concise and descriptive
+- describes WHAT is being built/fixed, not HOW
+
+## Branch creation steps (always in this order)
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/SAFE-123
+```
+
+## Rules
+- **Never write code on `main`** — always branch first.
+- **Always pull latest `main`** before branching — never branch from a stale base.
+- If already on a non-main branch when a new feature is mentioned, ask the user whether to finish the current branch first or branch from main regardless.
+- Ticket numbers are preserved exactly as given (e.g. `SAFE-123`, `FE-42`, `JIRA-001`).

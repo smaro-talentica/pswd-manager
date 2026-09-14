@@ -1,0 +1,120 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ItemType {
+  LOGIN
+  NOTE
+  CARD
+  IDENTITY
+  CUSTOM
+}
+
+enum SharePermission {
+  READ
+  WRITE
+}
+
+model User {
+  id                   String   @id @default(uuid()) @db.Uuid
+  email                String   @unique
+  /// Argon2id hash of the *login* password. Never the vault key.
+  passwordHash         String
+  kdfSalt              Bytes
+  kdfParams            Json
+  publicKey            Bytes
+  encryptedPrivateKey  Bytes
+  /// Base32 TOTP secret for an authenticator app. Null when 2FA is off.
+  totpSecret           String?
+  totpEnabled          Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  vaults               Vault[]
+  templates            Template[]
+  sharesSent           Share[]  @relation("ShareFrom")
+  sharesReceived       Share[]  @relation("ShareTo")
+}
+
+model Vault {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  name          String
+  /// Data-encryption key wrapped by the owner's derived key.
+  encryptedDek  Bytes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folders       Folder[]
+  items         Item[]
+}
+
+model Folder {
+  id        String   @id @default(uuid()) @db.Uuid
+  vaultId   String   @db.Uuid
+  parentId  String?  @db.Uuid
+  /// Encrypted folder name (ciphertext). Server never stores plaintext labels.
+  name      Bytes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  vault     Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  parent    Folder?  @relation("FolderTree", fields: [parentId], references: [id])
+  children  Folder[] @relation("FolderTree")
+  items     Item[]
+}
+
+model Template {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  name      String
+  /// Field definitions only (labels, types, required). No secret values.
+  schema    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     Item[]
+}
+
+model Item {
+  id                String   @id @default(uuid()) @db.Uuid
+  vaultId           String   @db.Uuid
+  folderId          String?  @db.Uuid
+  templateId        String?  @db.Uuid
+  type              ItemType
+  /// AES-GCM ciphertext of the item payload (username, password, custom fields, …).
+  encryptedPayload  Bytes
+  nonce             Bytes
+  /// Item DEK wrapped with the owner's vault DEK.
+  wrappedDek        Bytes
+  version           Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  vault             Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  folder            Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  template          Template? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  shares            Share[]
+}
+
+model Share {
+  id          String          @id @default(uuid()) @db.Uuid
+  itemId      String          @db.Uuid
+  fromUserId  String          @db.Uuid
+  toUserId    String          @db.Uuid
+  /// Item DEK wrapped with the recipient's public key.
+  wrappedKey  Bytes
+  permission  SharePermission @default(READ)
+  createdAt   DateTime        @default(now())
+  expiresAt   DateTime?
+  item        Item            @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  fromUser    User            @relation("ShareFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser      User            @relation("ShareTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, toUserId])
+  @@index([toUserId])
+  @@index([itemId])
+}
