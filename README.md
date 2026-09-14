@@ -54,3 +54,41 @@ Auth in this first slice:
 - Session cookies are httpOnly. Vault keys never go in `localStorage`. The access cookie is short-lived; the refresh cookie rotates it without a page reload.
 
 Read **AGENTS.md** before implementing features. The server must never see plaintext vault secrets. Product contracts live in `fe/openspec/specs/` and `be/openspec/specs/` (backfilled from the shipped app). Start a new change with OpenSpec in `fe/` or `be/` rather than copying screens across apps.
+
+## Deploy (free tier)
+
+Stack: **[Neon](https://neon.tech)** Postgres + **[Render](https://render.com)** (Node API + static PWA). The repo includes `render.yaml` for a one-shot Blueprint.
+
+**Limits:** Render free web services spin down after idle (~15 min); the first request after sleep can take 30–60 seconds. Use this for demos and personal trials, not production-grade uptime.
+
+### 1. Database (Neon)
+
+1. Create a Neon project and database.
+2. Copy the **pooled** connection string (PostgreSQL). Append `?sslmode=require` if it is not already present.
+3. Keep it for the API service env var `DATABASE_URL`.
+
+### 2. Apply the Blueprint (Render)
+
+1. In Render: **New → Blueprint**, connect `https://github.com/smaro-talentica/pswd-manager` (this repo).
+2. When prompted for env vars:
+   - **API `DATABASE_URL`:** Neon connection string.
+   - **API `FRONTEND_ORIGIN`:** leave blank for now (set after step 4).
+   - **Static `VITE_API_BASE_URL`:** leave blank for now (set after step 3).
+   - JWT secrets can stay **auto-generated** by the blueprint.
+3. Deploy. Open the **API** service URL and confirm `GET /api/health` returns JSON (`status: ok`).
+4. On the **static** service, set **`VITE_API_BASE_URL`** to the API origin only (example: `https://pswd-manager-api.onrender.com` — no trailing slash, no `/api`). Trigger a **manual redeploy** so the PWA build picks it up.
+5. On the **API** service, set **`FRONTEND_ORIGIN`** to the static site origin (example: `https://pswd-manager-fe.onrender.com` — no trailing slash). **Redeploy** the API so CORS matches.
+
+### 3. Smoke test
+
+1. Open the static site URL, sign up, log in, unlock the vault.
+2. If login fails with CORS or cookie errors, re-check that `FRONTEND_ORIGIN` and `VITE_API_BASE_URL` are exact origins (scheme + host, no path).
+
+### Manual deploy (without Blueprint)
+
+| Service | Root directory | Build | Start / publish |
+| --- | --- | --- | --- |
+| API | `be` | `npm ci && npx prisma generate && npm run build` | Pre-deploy: `npx prisma migrate deploy` · Start: `npm run start:prod` |
+| PWA | `fe` | `npm ci && npm run build` (set `VITE_API_BASE_URL` in Render env) | Publish `dist` · SPA rewrite `/*` → `/index.html` |
+
+Node **24.17** (see `be/.nvmrc` and `fe/.nvmrc`). Auth uses httpOnly cookies on the API host; the browser calls the API with `credentials: 'include'`.
