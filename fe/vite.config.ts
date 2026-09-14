@@ -19,8 +19,8 @@ export default defineConfig(({ command }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {
-        name: 'password-manager',
-        short_name: 'password-manager',
+        name: 'Password Manager',
+        short_name: 'Passwords',
         description: 'Personal password manager PWA',
         theme_color: '#ffffff',
         background_color: '#ffffff',

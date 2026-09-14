@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
 import { AuthSessionProvider } from '@/components/feature/AuthSession'
+import { PwaInstallRoot } from '@/components/feature/PwaInstall'
 import { Login } from '@/pages/Login'
 import { PasswordManager } from '@/pages/PasswordManager'
 import { SignUp } from '@/pages/SignUp'
@@ -7,9 +8,11 @@ import { SignUp } from '@/pages/SignUp'
 function RootLayout() {
   return (
     <AuthSessionProvider>
-      <div className="min-h-dvh bg-background text-foreground">
-        <Outlet />
-      </div>
+      <PwaInstallRoot>
+        <div className="min-h-dvh bg-background text-foreground">
+          <Outlet />
+        </div>
+      </PwaInstallRoot>
     </AuthSessionProvider>
   )
 }

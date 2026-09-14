@@ -24,3 +24,14 @@ In development, the app MUST unregister existing service workers before boot and
 #### Scenario: Local PWA
 - **WHEN** the user runs the frontend dev server
 - **THEN** the origin is `https://localhost:5173` and API calls use the `/api` proxy
+
+### Requirement: Install prompt in the browser
+In production builds, the app MUST register the service worker and capture `beforeinstallprompt` so Chromium can offer install. When install is available and the app is not already standalone, the UI MUST show an install bar with **Install** (Chromium) or iOS “Add to Home Screen” guidance. Dismissal MUST hide the bar for the current visit (Chromium) or until the user clears site data (iOS).
+
+#### Scenario: Chromium installable visit
+- **WHEN** the browser fires `beforeinstallprompt` and the app is not in standalone display mode
+- **THEN** a bottom install bar appears with **Install** and **Not now**
+
+#### Scenario: Already installed
+- **WHEN** `display-mode: standalone` (or iOS `navigator.standalone`)
+- **THEN** the install bar MUST NOT appear
