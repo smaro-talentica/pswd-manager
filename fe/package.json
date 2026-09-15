@@ -16,7 +16,7 @@
     "build:stage": "tsc -b && vite build --mode staging",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview --host localhost --port 5173 --strictPort"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",

@@ -21,6 +21,14 @@ npm run dev
 
 That starts Postgres (`docker compose`), waits until the database is healthy, then runs the API and PWA in one terminal. Press **Ctrl+C** to stop the Node dev servers (Postgres keeps running in Docker until you `docker compose down`).
 
+**Production-like PWA (install prompt, service worker):**
+
+```bash
+npm run preview
+```
+
+Same stack as `dev`, but builds the frontend first and serves it with `vite preview` on `https://localhost:5173`. Use this to test PWA install on the login page. The first run takes longer because of the production build.
+
 **First time on this machine:**
 
 ```bash

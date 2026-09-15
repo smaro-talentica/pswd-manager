@@ -1,12 +1,23 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/feature/AuthSession'
+import { PwaInstallBanner, usePwaInstall } from '@/components/feature/PwaInstall'
 import { ThemeToggle } from '@/components/feature/ThemeToggle'
 import { TotpStep } from './TotpStep'
 import { toUserMessage } from '@/utils/api'
 import { cn } from '@/utils/cn'
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@/utils/password'
+
+function LoginChrome({ children }: { children: ReactNode }) {
+  const { bannerKind } = usePwaInstall()
+  return (
+    <>
+      <div className={cn(bannerKind !== 'none' && 'pb-28')}>{children}</div>
+      <PwaInstallBanner />
+    </>
+  )
+}
 
 export function Login() {
   const { status, login, verifyLoginTotp, cancelTotp, needsTotp } = useAuth()
@@ -42,17 +53,20 @@ export function Login() {
 
   if (needsTotp) {
     return (
-      <TotpStep
-        onVerify={verifyLoginTotp}
-        onBack={() => {
-          setPassword('')
-          cancelTotp()
-        }}
-      />
+      <LoginChrome>
+        <TotpStep
+          onVerify={verifyLoginTotp}
+          onBack={() => {
+            setPassword('')
+            cancelTotp()
+          }}
+        />
+      </LoginChrome>
     )
   }
 
   return (
+    <LoginChrome>
     <main className="flex min-h-dvh w-full items-center justify-center px-4 py-8">
       <div className="flex w-full max-w-sm flex-col gap-4">
         <div className={cn('flex items-center justify-between gap-3')}>
@@ -97,5 +111,6 @@ export function Login() {
         </p>
       </div>
     </main>
+    </LoginChrome>
   )
 }
